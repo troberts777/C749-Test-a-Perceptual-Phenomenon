@@ -1,0 +1,204 @@
+---
+title: "Test a Perceptual Phenomenon"
+author: "Tim Roberts"
+output: html_notebook
+---
+```{r, echo=FALSE, message=FALSE,  warning=FALSE, fig.show='hide', results='hide' }
+library(ggplot2)
+library(gridExtra)
+
+getwd()
+setwd('C:/Users/trobe/Documents/IT CLASSES Local/C749/PART_6')
+
+sd <- read.csv('stroopdata.csv')
+
+```
+## Stroop Effect
+
+In a Stroop task, participants are presented with a list of words, with each word displayed in a color of ink. The participant’s task is to say out loud the color of the ink in which the word is printed. The task has two conditions: a congruent words condition, and an incongruent words condition. In the congruent words condition, the words being displayed are color words whose names match the colors in which they are printed: for example RED, BLUE. In the incongruent words condition, the words displayed are color words whose names do not match the colors in which they are printed: for example PURPLE, ORANGE. In each case, we measure the time it takes to name the ink colors in equally-sized lists. Each participant will go through and record time from each condition.  
+
+**My test results:**
+
+Congruent words - 13.3  
+
+Incongruent words - 36.54  
+
+
+### 1. What is our independent variable? What is our dependent variable?  
+
+
+The **independent vaiable** is the word/color combination in the test that is being manipulated.  
+
+The **dependent vaiable** is the time it takes to recognize the word/color combination in each part of the test.  
+
+
+### 2. What is an appropriate set of hypotheses for this task? What kind of statistical test do you expect to perform? Justify your choices.  
+
+Null Hypothesis, H0 -> there is no time difference in the word color recognition between the two tests.  
+
+Alternative Hypothesis, H1 -> there is a significant time increase in the word color recognition between the two tests.  
+
+**statistical test choices and assumptions**  
+
+* 95% confidence interval.  
+
+* Paired one tail t-test -> with two tests per participant this test will show if the mean of incongruent words is statistically significantly different from the congruent words at an alpha of 0.05.  
+
+**Why** I will be using a t-test instead of a z-test because:  
+
+1. the population standard deviation is unknown.
+
+2. the sample set is less than 30.   
+
+The t-test will be a one tailed t-test.  The directional alternative hypothesis is that the participant's incongruent sample mean will be larger than the participant's congruent sample mean.  
+
+A paired t-test will be used because the data set is of one group of participants tested twice under different conditions (word/color congruency). This will also facilitate either rejecting or accepting the null hypothesis.  
+
+
+
+### 3. Report some descriptive statistics regarding this dataset. Include at least one measure of central tendency and at least one measure of variability.  
+
+```{r, echo=FALSE, message=FALSE,  warning=FALSE }
+summary(sd)
+```
+**Descriptive Statistics**
+The Congruent Sample mean is 14.05.  
+The Incongruent sample mean is 22.02.    
+
+
+```{r, echo=FALSE, message=FALSE,  warning=FALSE }
+# Setup variables to be used later
+xBarC = mean(sd$Congruent)
+xBarI = mean(sd$Incongruent)
+n = nrow(sd)
+```
+
+
+```{r, echo=FALSE, message=FALSE,  warning=FALSE }
+IQR(sd$Congruent)
+IQR(sd$Incongruent)
+```
+The interquartile range for Congruent Sample is 4.306 rounded up.  
+The interquartile range for the incongruent sample is 5.335 rounded up.  
+
+```{r, echo=FALSE, message=FALSE,  warning=FALSE }
+sd(sd$Congruent)
+sd(sd$Incongruent)
+```
+The standard deviation for Congruent Sample is 3.56 rounded up.  
+The standard deviation for the incongruent sample is 4.80 rounded up.  
+
+
+### 4. Provide one or two visualizations that show the distribution of the sample data. Write one or two sentences noting what you observe about the plot or plots.
+
+```{r, echo=FALSE, message=FALSE,  warning=FALSE }
+p1 <- ggplot(sd, aes(x = sd$Congruent)) +
+        geom_histogram(color = 'grey3', fill = 'dodgerblue',               binwidth = 1) +
+        ggtitle("Fig. 1: Congruent Distributions              (n=24)") + ylab("Count") + xlab("Time")
+
+
+
+
+p2 <- ggplot(sd, aes(x = sd$Congruent)) +
+        geom_boxplot(color = 'grey3', fill = 'dodgerblue',               binwidth = 1) +
+        ggtitle("Fig. 2: Congruent Distributions              (n=24)") + ylab("Count") +
+        xlab("Time")
+
+
+
+grid.arrange(p1, p2, ncol = 1)
+```
+
+The distribution for the Congruent times appear right skewed with no outliers.  
+
+```{r, echo=FALSE, message=FALSE,  warning=FALSE }
+
+
+p1 <- ggplot(sd, aes(x = sd$Incongruent)) +
+        geom_histogram(color = 'grey3', fill = 'firebrick2',               binwidth = 1) +
+        ggtitle("Fig. 3: Incongruent Distributions              (n=24)") + ylab("Count") +
+        xlab("Time")
+  
+
+p2 <- ggplot(sd, aes(x = sd$Incongruent)) +
+        geom_boxplot(color = 'grey3', fill = 'firebrick2',               binwidth = 1) +
+        ggtitle("Fig. 4: Incongruent Distributions              (n=24)") + ylab("Count") +
+        xlab("Time")
+
+
+grid.arrange(p1, p2, ncol = 1)
+```
+
+The distribution for the Incongruent times appears right skewed with a higher center and a couple of outliers with a max time above 35.  
+
+
+
+## 5. Now, perform the statistical test and report your results. What is your confidence level and your critical statistic value? Do you reject the null hypothesis or fail to reject it? Come to a conclusion in terms of the experiment task. Did the results match up with your expectations?
+
+The data will be run through a t-test. A 95% Confidence level will be used, with 23 degrees of freedom.  The t critical value is +/- 2.069. 
+
+```{r, echo=FALSE, message=FALSE,  warning=FALSE }
+t_crit = 2.069
+```
+
+
+
+
+**Calculating difference between means**  
+Formula: XBar Congruent - XBar Incongruent  
+```{r, echo=FALSE, message=FALSE,  warning=FALSE }
+#Difference in Means
+Mean_Diff = xBarC - xBarI 
+Mean_Diff
+```
+
+
+**Calculating standard deviation of the difference**  
+```{r, echo=FALSE, message=FALSE,  warning=FALSE }
+# Calculate the Differences & Standard Deviation of the differences
+sd$diff <- sd$Congruent - sd$Incongruent
+stdev_diff = sd(sd$diff)
+
+stdev_diff
+
+```
+
+**Calculating Standard Error**  
+Fromula:  Difference between Standard Deviations / sqrt(n)  
+
+```{r, echo=FALSE, message=FALSE,  warning=FALSE }
+#Calcuate standard error of the difference
+SE = stdev_diff/(sqrt(n))
+SE
+```
+
+
+
+**T statistic Calculation** 
+
+Formula:  t_stat = (Difference between means) / Standard Error  
+
+```{r, echo=FALSE, message=FALSE,  warning=FALSE }
+#Calculate T statistic
+t_stat = (Mean_Diff)/(SE)
+t_stat
+```
+
+**The Confidence Interval Calculation**  
+
+Formula:  Difference between means +/- t_crit * SE  
+
+
+```{r, echo=FALSE, message=FALSE,  warning=FALSE }
+# Calculate Confidence Interval
+Margin_Error = t_crit * SE
+CI = c(Mean_Diff - Margin_Error, Mean_Diff + Margin_Error)
+CI
+```
+
+With a t-statistic of (-8.02), at a t-critical of (+/- 2.069) at alpha < .05, with 23 degrees of freedom, the null hypothesis is rejected.  
+ 
+The 95% Confidence Interval is (-10.02, -5.91).  
+
+These results align with my own experience and suggest that the performance is worse when subjects undergo the incongruent test versus the congruent test.  
+
