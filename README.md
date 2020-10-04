@@ -6,5 +6,5 @@ In this project, you will investigate a classic phenomenon from experimental psy
 ### Files
 
 * stroop_analysis_final.html
-* stroop_analysis_final.pdf
+* Test a Perceptual Phenomenon.pdf
 * stroop_analysis_final.Rmd
